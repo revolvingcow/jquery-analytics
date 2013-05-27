@@ -21,6 +21,22 @@
 // THE SOFTWARE.
 
 (function ($) {
+    var uniqueId = 0;
+
+    $.fn.analyticsUniqueId = function () {
+        if (this.length == 0) {
+            return;
+        }
+
+        return this.each(function () {
+            if (!$(this).attr("id")) {
+                $(this).attr("id", "analytics-id-" + ++uniqueId);
+            }
+        });
+    };
+})(jQuery);
+
+(function ($) {
     function walkTree(element) {
         var tree = [];
         var tagName = $(element).prop("tagName");
@@ -33,7 +49,7 @@
                 });
             }
             
-            var tagId = $(element).uniqueId().attr("id");
+            var tagId = $(element).analyticsUniqueId().attr("id");
             tree.push(tagName + '[id="' + tagId + '"]');
         }
         
