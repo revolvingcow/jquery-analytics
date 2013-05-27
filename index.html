@@ -28,32 +28,65 @@
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-          <h3>Welcome to GitHub Pages.</h3>
+          <h1>jquery-analytics</h1>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<h2>Description</h2>
+
+<p>jQuery plug-in to provide custom analytics. For those of us who can not use Google Analytics at work or just want to dork with something else.</p>
+
+<h2>How to get it?</h2>
 
 <pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+$ git clone https://github.com/bmallred/jquery-analytics
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<h2>Easy to use</h2>
 
-<h3>Designer Templates</h3>
+<p>With just a few lines of code you can easily configure your own web page analytics. Just specify the URI you would like to communicate with
+and everything is a go. </p>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<div class="highlight"><pre><span class="nx">$</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s2">".trace"</span><span class="p">).</span><span class="nx">analytics</span><span class="p">({</span>
+        <span class="nx">url</span><span class="o">:</span> <span class="s2">"http://localhost/trace"</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
 
-<h3>Rather Drive Stick?</h3>
+<h2>Custom tags supported out-of-the-box</h2>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p>Often you want to track more meaningful information along with what is provided. Simply apply any number of custom attributes prefixed with <strong>"data-analytics-"</strong> and we will take care of the rest!</p>
+
+<div class="highlight"><pre><span class="nt">&lt;a</span> <span class="na">id=</span><span class="s">"myLink"</span> <span class="na">href=</span><span class="s">"#"</span> <span class="na">data-analytics-outfit=</span><span class="s">"pajamas"</span> <span class="na">data-analytics-shoes=</span><span class="s">"slippers"</span><span class="nt">&gt;</span>My link<span class="nt">&lt;/a&gt;</span>
+</pre></div>
+
+<p>This will send the following information back:</p>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="err">id:</span> <span class="nt">"myLink"</span><span class="p">,</span>
+    <span class="err">outfit:</span> <span class="nt">"pajamas"</span><span class="p">,</span>
+    <span class="err">shoes:</span> <span class="nt">"slippers"</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2>Determining the flow</h2>
+
+<p>It is also possible to track the flow a user goes through while visiting your page if you have an uniquely identifier piece of information. This can be done during initialization as such:</p>
+
+<div class="highlight"><pre><span class="nx">$</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s2">".trace"</span><span class="p">).</span><span class="nx">analytics</span><span class="p">({</span>
+        <span class="nx">url</span><span class="o">:</span> <span class="s2">"http://localhost/trace"</span><span class="p">,</span>
+        <span class="nx">client</span><span class="o">:</span> <span class="s2">"unique identifier"</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
 
 <h3>Authors and Contributors</h3>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>Originally created by <a href="https://github.com/bmallred" class="user-mention">@bmallred</a>.</p>
 
 <h3>Support or Contact</h3>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>Issues, questions, or comments? You can reach the author at <a href="http://gplus.to/bmallred">http://gplus.to/bmallred</a> or report a problem on the issue tracker.</p>
         </section>
 
         <aside id="sidebar">
