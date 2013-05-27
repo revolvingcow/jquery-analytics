@@ -59,8 +59,7 @@ String.prototype.endsWith = function (search) {
         attributes: [],
         assignTo: ["a", "input[type='submit']"],
         url: null,
-        client: null,
-        live: false
+        client: null
     };
 
     // Walk the tree of a given node.
