@@ -20,6 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+String.prototype.startsWith = function (search) {
+    return this.indexOf(search) == 0;
+}
+
+String.prototype.endsWith = function (search) {
+    return original.lastIndexOf(search) == original.length - search.length;
+};
+
 (function ($) {
     var uniqueId = 0;
 
@@ -37,6 +45,14 @@
 })(jQuery);
 
 (function ($) {
+    var settings = {
+        attributes: [],
+        assignTo: ["a", "input[type='submit']"],
+        url: null,
+        client: null,
+        live: false
+    };
+
     function walkTree(element) {
         var tree = [];
         var tagName = $(element).prop("tagName");
@@ -56,12 +72,51 @@
         return tree;
     }
 
-    function startsWith(original, search) {
-        return original.indexOf(search) == 0;
+    function identifyPath(node) {
+        // Assign identification to all relevant elements.
+        walkTree(node);
     }
 
-    function endsWith(original, search) {
-        return original.lastIndexOf(search) == original.length - search.length;
+    function initiateTrace(e) {
+        $this = $(this);
+
+        if (settings.url && !$this.is(".analytics-passthrough")) {
+            // We prevent the default action to allow the background call to succeed.
+            e.preventDefault();
+
+            var data = {
+                id: walkTree($this).join('.')
+            };
+
+            // Attach the client identifier if found.
+            if (settings.client) {
+                data["client"] = settings.client
+            }
+
+            // Assign any "data-analytics-" attributes.
+            var dataAttributes = $this.data();
+            for (var attribute in dataAttributes) {
+                if (attribute.startsWith("analytics")) {
+                    var cleanName = attribute.replace(/analytics/g, '').toLowerCase();
+                    data[cleanName] = dataAttributes[attribute];
+                }
+            }
+
+            // Assign the custom attributes requested to be collected.
+            $.each($(settings.attributes), function (i, attribute) {
+                data[attribute] = $this.attr(attribute);
+            });
+
+            $.ajax({
+                type: "POST",
+                url: settings.url,
+                contentType: "application/x-www-form-urlencoded",
+                data: data
+            })
+            .always(function () {
+                $this.addClass("analytics-passthrough").click();
+            });
+        }
     }
     
     $.fn.analytics = function (options) {
@@ -70,62 +125,22 @@
         }
 
         // Configure the default settings.
-        var settings = $.extend({
-            attributes: [],
-            assignTo: ["a", "input[type='submit']"],
-            url: null,
-            client: null
-        }, options);
+        settings = $.extend({}, settings, options);
 
         return this.each(function () {
-            var $elements = $(this).find(settings.assignTo.join(","));
-            $elements.each(function () {
-                // Assign identification to all relevant elements.
-                walkTree($(this));
-            })
-            .click(function (e) {
-                $this = $(this);
-
-                if (settings.url) {
-                    // We prevent the default action to allow the background call to succeed.
-                    e.preventDefault();
-
-                    var data = {
-                        id: walkTree($this).join('.')
-                    };
-
-                    // Attach the client identifier if found.
-                    if (settings.client) {
-                        data["client"] = settings.client
-                    }
-
-                    // Assign any "data-analytics-" attributes.
-                    var dataAttributes = $this.data();
-                    for (var attribute in dataAttributes) {
-                        if (startsWith(attribute, "analytics")) {
-                            var cleanName = attribute.replace(/analytics/g, '').toLowerCase();
-                            data[cleanName] = dataAttributes[attribute];
-                        }
-                    }
-
-                    // Assign the custom attributes requested to be collected.
-                    $.each($(settings.attributes), function (i, attribute) {
-                        data[attribute] = $this.attr(attribute);
-                    });
-
-                    $.ajax({
-                        type: "POST",
-                        url: settings.url,
-                        contentType: "application/x-www-form-urlencoded",
-                        data: data
-                    })
-                    .done(function () {})
-                    .fail(function () {})
-                    .always(function () {
-                        // TODO: Continue with the default action.
-                    });
-                }
+            var selector = settings.assignTo.join(",");
+            $this = $(this);
+        
+            $this.find(selector)
+            .each(function () {
+                identifyPath($(this));
+                $(this).click(initiateTrace);
             });
+        })
+        .on("DOMNodeInserted", function (e) {
+            $target = $(e.target);
+            identifyPath($target);
+            $target.click(initiateTrace);
         });
     };
 })(jQuery);
