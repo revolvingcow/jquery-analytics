@@ -1,0 +1,44 @@
+<html>
+<head>
+
+</head>
+<body>
+	<h1>jQuery Analytics</h1>
+
+	<p>The following links have been added by static means.</p>
+	<ul class="trace">
+		<li><a href="#NoMetatdata">No metadata</a></li>
+		<li><a href="#AssignedId" id="staticId">Assigned identification</a></li>
+		<li><a href="#DefaultMetadata" data-analytics-dog="terrier">Default metadata given</a></li>
+	</ul>
+
+	<p>These links have been dynamically created at runtime but still are being traced.</p>
+	<ul id="dynamic-list" class="trace"></ul>
+
+	<div id="dynamic-div" class="trace"></div>
+
+	<p>And these little pigs go home (I mean they are being ignored).</p>
+	<ul>
+		<li><a href="http://google.com">Google</a></li>
+		<li><a href="http://yahoo.com">Yahoo</a></li>
+		<li><a href="http://bing.com">Bing</a></li>
+	</ul>
+
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="jquery-analytics.js"></script>
+	<script type="text/javascript">
+		$(function () {
+			$(".trace").analytics({
+				url: "http://localhost/trace"
+			});
+
+			$("#dynamic-list")
+			.append('<li><a href="#DynamicNoMetatdata">Dynamic link with no metatdata</a></li>')
+			.append('<li><a href="#DynamicAssignedId" id="dynamicId">Dynamic link with assigned identification</a></li>')
+
+			$("#dynamic-div")
+			.append('<a href="#DynamicDefaultMetadata" data-analytics-dog="mutt">Dynamic link with metadata given</a>');
+		});
+	</script>
+</body>
+</html>

@@ -1,17 +1,17 @@
 // The MIT License (MIT)
-//
+
 // Copyright (c) <year> <copyright holders>
-//
+
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
+
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-//
+
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,17 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+// Check to see if a string starts with the given search criteria.
+// @param {String} search
+// @return {Boolean} a value indicating whether the string starts with the search criteria
 String.prototype.startsWith = function (search) {
     return this.indexOf(search) == 0;
-}
+};
 
+// Check to see if a string ends with the given search criteria.
+// @param {String} search
+// @return {Boolean} a value indicating whether the string ends with the search criteria
 String.prototype.endsWith = function (search) {
     return original.lastIndexOf(search) == original.length - search.length;
 };
 
 (function ($) {
+    // Declared outside of scope to maintain an accurate count.
     var uniqueId = 0;
 
+    // Provide a unique identifier to an element if one has not already been assigned.
+    // @return {Object} modified jQuery objects
     $.fn.analyticsUniqueId = function () {
         if (this.length == 0) {
             return;
@@ -45,6 +54,7 @@ String.prototype.endsWith = function (search) {
 })(jQuery);
 
 (function ($) {
+    // Default settings which may be extended upon.
     var settings = {
         attributes: [],
         assignTo: ["a", "input[type='submit']"],
@@ -53,6 +63,9 @@ String.prototype.endsWith = function (search) {
         live: false
     };
 
+    // Walk the tree of a given node.
+    // @param {Object} element
+    // @return {Array} path
     function walkTree(element) {
         var tree = [];
         var tagName = $(element).prop("tagName");
@@ -70,20 +83,26 @@ String.prototype.endsWith = function (search) {
         }
         
         return tree;
-    }
+    };
 
+    // Identify the path to the node.
+    // @param {Object} node
     function identifyPath(node) {
         // Assign identification to all relevant elements.
         walkTree(node);
-    }
+    };
 
+    // Initiate a trace on click.
+    // @param {Object} e
     function initiateTrace(e) {
+        // Locally scope this variable.
         $this = $(this);
 
-        if (settings.url && !$this.is(".analytics-passthrough")) {
-            // We prevent the default action to allow the background call to succeed.
-            e.preventDefault();
+        if (settings.url && !$this.is(".analytics-captured")) {
+            // // We prevent the default action to allow the background call to succeed.
+            // e.preventDefault();
 
+            // Initialize the data to be collected.
             var data = {
                 id: walkTree($this).join('.')
             };
@@ -107,6 +126,7 @@ String.prototype.endsWith = function (search) {
                 data[attribute] = $this.attr(attribute);
             });
 
+            // Send the analytics.
             $.ajax({
                 type: "POST",
                 url: settings.url,
@@ -114,11 +134,14 @@ String.prototype.endsWith = function (search) {
                 data: data
             })
             .always(function () {
-                $this.addClass("analytics-passthrough").click();
+                $this.addClass("analytics-captured");
             });
         }
-    }
+    };
     
+    // Plug-in function providing easy access to analytics.
+    // @param {Object} options
+    // @returns {Object} modified jQuery objects
     $.fn.analytics = function (options) {
         if ($(this).length == 0) {
             return;
@@ -127,20 +150,24 @@ String.prototype.endsWith = function (search) {
         // Configure the default settings.
         settings = $.extend({}, settings, options);
 
+        // Declare the selector to be used.
+        var selector = settings.assignTo.join(",");
+
         return this.each(function () {
-            var selector = settings.assignTo.join(",");
-            $this = $(this);
-        
-            $this.find(selector)
+            // Itereate through all elements given on initiation.
+            $(this).find(selector).andSelf().filter(selector)
             .each(function () {
                 identifyPath($(this));
-                $(this).click(initiateTrace);
+                $(this).on("click", initiateTrace);
             });
         })
         .on("DOMNodeInserted", function (e) {
-            $target = $(e.target);
-            identifyPath($target);
-            $target.click(initiateTrace);
+            // This will capture any dynamically generated content.
+            $(e.target).find(selector).andSelf().filter(selector)
+            .each(function () {
+                identifyPath($(this));
+                $(this).on("click", initiateTrace);
+            });
         });
     };
 })(jQuery);
