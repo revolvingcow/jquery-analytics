@@ -38,22 +38,6 @@ String.prototype.endsWith = function (search) {
     // Declared outside of scope to maintain an accurate count.
     var uniqueId = 0;
 
-    // Provide a unique identifier to an element if one has not already been assigned.
-    // @return {Object} modified jQuery objects
-    $.fn.analyticsUniqueId = function () {
-        if (this.length == 0) {
-            return;
-        }
-
-        return this.each(function () {
-            if (!$(this).attr("id")) {
-                $(this).attr("id", "analytics-id-" + ++uniqueId);
-            }
-        });
-    };
-})(jQuery);
-
-(function ($) {
     // Default settings which may be extended upon.
     var settings = {
         attributes: [],
@@ -145,6 +129,20 @@ String.prototype.endsWith = function (search) {
                 }
             });
         }
+    };
+
+    // Provide a unique identifier to an element if one has not already been assigned.
+    // @return {Object} modified jQuery objects
+    $.fn.analyticsUniqueId = function () {
+        if (this.length == 0) {
+            return;
+        }
+
+        return this.each(function () {
+            if (!$(this).attr("id")) {
+                $(this).attr("id", "analytics-id-" + ++uniqueId);
+            }
+        });
     };
     
     // Plug-in function providing easy access to analytics.
