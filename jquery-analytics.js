@@ -58,6 +58,7 @@ String.prototype.endsWith = function (search) {
     var settings = {
         attributes: [],
         assignTo: ["a", "input[type='submit']"],
+        captureOnce: false,
         client: null,
         exclude: ".analytics-exclude",
         url: null
@@ -134,7 +135,9 @@ String.prototype.endsWith = function (search) {
                 data: data
             })
             .always(function () {
-                $this.addClass("analytics-captured");
+                if (settings.captureOnce) {
+                    $this.addClass("analytics-captured");
+                }
             });
         }
     };
