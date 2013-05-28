@@ -31,7 +31,7 @@ String.prototype.startsWith = function (search) {
 // @param {String} search
 // @return {Boolean} a value indicating whether the string ends with the search criteria
 String.prototype.endsWith = function (search) {
-    return original.lastIndexOf(search) == original.length - search.length;
+    return this.lastIndexOf(search) == this.length - search.length;
 };
 
 (function ($) {
