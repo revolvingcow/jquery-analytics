@@ -28,10 +28,6 @@
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-<h2>Description</h2>
-
-<p>jQuery plug-in to provide custom analytics. For those of us who can not use Google Analytics at work or just want to dork with something else.</p>
-
 <h2>How to get it?</h2>
 
 <pre><code>$ cd your_repo_root/
@@ -52,7 +48,7 @@ and everything is a go. </p>
 
 <h2>Custom tags supported out-of-the-box</h2>
 
-<p>Often you want to track more meaningful information along with what is provided. Simply apply any number of custom attributes prefixed with <strong>"data-analytics-"</strong> and we will take care of the rest!</p>
+<p>Often you want to track more meaningful information instead of just page hits. Simply apply any number of custom attributes prefixed with <strong>"data-analytics-"</strong> and we will take care of the rest!</p>
 
 <div class="highlight"><pre><span class="nt">&lt;a</span> <span class="na">id=</span><span class="s">"myLink"</span> <span class="na">href=</span><span class="s">"#"</span> <span class="na">data-analytics-outfit=</span><span class="s">"pajamas"</span> <span class="na">data-analytics-shoes=</span><span class="s">"slippers"</span><span class="nt">&gt;</span>My link<span class="nt">&lt;/a&gt;</span>
 </pre></div>
@@ -68,7 +64,7 @@ and everything is a go. </p>
 
 <h2>Determining the flow</h2>
 
-<p>It is also possible to track the flow a user goes through while visiting your page if you have an uniquely identifier piece of information. This can be done during initialization as such:</p>
+<p>It is also possible to track the flow of users while they visit your site by specifying their unique identifier. This can be done during initialization like so:</p>
 
 <div class="highlight"><pre><span class="nx">$</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
     <span class="nx">$</span><span class="p">(</span><span class="s2">".trace"</span><span class="p">).</span><span class="nx">analytics</span><span class="p">({</span>
