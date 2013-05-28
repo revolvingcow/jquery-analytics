@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) <year> <copyright holders>
+// Copyright (c) 2013 Bryan Allred <bryan.allred@gmail.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -58,8 +58,9 @@ String.prototype.endsWith = function (search) {
     var settings = {
         attributes: [],
         assignTo: ["a", "input[type='submit']"],
-        url: null,
-        client: null
+        client: null,
+        exclude: ".analytics-exclude",
+        url: null
     };
 
     // Walk the tree of a given node.
@@ -97,7 +98,7 @@ String.prototype.endsWith = function (search) {
         // Locally scope this variable.
         $this = $(this);
 
-        if (settings.url && !$this.is(".analytics-captured")) {
+        if (settings.url && !$this.is(".analytics-captured") && !$this.is(settings.exclude)) {
             // // We prevent the default action to allow the background call to succeed.
             // e.preventDefault();
 
