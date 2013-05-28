@@ -79,8 +79,13 @@ String.prototype.endsWith = function (search) {
                 });
             }
             
-            var tagId = $(element).analyticsUniqueId().attr("id");
-            tree.push(tagName + '[id="' + tagId + '"]');
+            if (tagName == "HTML" || tagName == "BODY") {
+                tree.push(tagName);
+            }
+            else {
+                var tagId = $(element).analyticsUniqueId().attr("id");
+                tree.push(tagName + '[id="' + tagId + '"]');
+            }
         }
         
         return tree;
@@ -105,7 +110,7 @@ String.prototype.endsWith = function (search) {
 
             // Initialize the data to be collected.
             var data = {
-                id: walkTree($this).join('.')
+                id: walkTree($this).join(' ')
             };
 
             // Attach the client identifier if found.
