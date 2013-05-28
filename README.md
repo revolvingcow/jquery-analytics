@@ -23,7 +23,7 @@ $(function () {
 Custom tags supported out-of-the-box
 ------------------------------------
 
-Often you want to track more meaningful information along with what is provided. Simply apply any number of custom attributes prefixed with **"data-analytics-"** and we will take care of the rest!
+Often you want to track more meaningful information instead of just page hits. Simply apply any number of custom attributes prefixed with **data-analytics-** and we will take care of the rest!
 
 ```html
 <a id="myLink" href="#" data-analytics-outfit="pajamas" data-analytics-shoes="slippers">My link</a>
@@ -42,7 +42,7 @@ This will send the following information back:
 Determining the flow
 --------------------
 
-It is also possible to track the flow a user goes through while visiting your page if you have an uniquely identifier piece of information. This can be done during initialization as such:
+It is also possible to track the flow of users while they visit your site by specifying their unique identifier. This can be done during initialization like so:
 
 ```javascript
 $(function () {
