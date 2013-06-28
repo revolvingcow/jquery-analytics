@@ -44,6 +44,7 @@ String.prototype.endsWith = function (search) {
         assignTo: ["a", "input[type='submit']"],
         captureOnce: false,
         client: null,
+        id: "id",
         exclude: ".analytics-exclude",
         url: null
     };
@@ -89,13 +90,24 @@ String.prototype.endsWith = function (search) {
         $this = $(this);
 
         if (settings.url && !$this.is(".analytics-captured") && !$this.is(settings.exclude)) {
-            // // We prevent the default action to allow the background call to succeed.
-            // e.preventDefault();
+            // We prevent the default action to allow the background call to succeed.
+            var preventedHref = null;
+            if ($this.attr("href")) {
+                e.preventDefault();
+                preventedHref = $this.attr("href");
+            }
 
             // Initialize the data to be collected.
-            var data = {
-                id: walkTree($this).join(' ')
-            };
+            var data = {};
+
+            // Attach the object identifier.
+            var tree = walkTree($this).join(' ');
+            if (settings.id) {
+                data[settings.id] = tree;
+            }
+            else {
+                data["id"] = tree;
+            }
 
             // Attach the client identifier if found.
             if (settings.client) {
@@ -126,6 +138,10 @@ String.prototype.endsWith = function (search) {
             .always(function () {
                 if (settings.captureOnce) {
                     $this.addClass("analytics-captured");
+                }
+
+                if (preventedHref) {
+                    window.location = preventedHref;
                 }
             });
         }
