@@ -60,16 +60,23 @@ String.prototype.endsWith = function (search) {
             var parent = $(element).parent();
             if (parent != undefined) {
                 $.each(walkTree($(element).parent()), function (i, node) {
-                    tree.push(node);
+                    if ($(node).is(settings.exclude)) {
+                        tree = null;
+                    }
+                    else if (tree !== null) {
+                        tree.push(node);
+                    }
                 });
             }
             
-            if (tagName == "HTML" || tagName == "BODY") {
-                tree.push(tagName);
-            }
-            else {
-                var tagId = $(element).analyticsUniqueId().attr("id");
-                tree.push(tagName + '[id="' + tagId + '"]');
+            if (tree !== null) {
+                if (tagName == "HTML" || tagName == "BODY") {
+                    tree.push(tagName);
+                }
+                else {
+                    var tagId = $(element).analyticsUniqueId().attr("id");
+                    tree.push(tagName + '[id="' + tagId + '"]');
+                }
             }
         }
         
@@ -90,60 +97,68 @@ String.prototype.endsWith = function (search) {
         $this = $(this);
 
         if (settings.url && !$this.is(".analytics-captured") && !$this.is(settings.exclude)) {
-            // We prevent the default action to allow the background call to succeed.
-            var preventedHref = null;
-            if ($this.attr("href")) {
-                e.preventDefault();
-                preventedHref = $this.attr("href");
-            }
+            // Walk the tree.
+            var tree = walkTree($this);
 
-            // Initialize the data to be collected.
-            var data = {};
+            // Make sure the tree does not include an excluded section.
+            if (tree !== null && tree.length > 0) {
+                // Join all the nodes of the tree.
+                tree = tree.join(' ');
 
-            // Attach the object identifier.
-            var tree = walkTree($this).join(' ');
-            if (settings.id) {
-                data[settings.id] = tree;
-            }
-            else {
-                data["id"] = tree;
-            }
-
-            // Attach the client identifier if found.
-            if (settings.client) {
-                data["client"] = settings.client
-            }
-
-            // Assign any "data-analytics-" attributes.
-            var dataAttributes = $this.data();
-            for (var attribute in dataAttributes) {
-                if (attribute.startsWith("analytics")) {
-                    var cleanName = attribute.replace(/analytics/g, '').toLowerCase();
-                    data[cleanName] = dataAttributes[attribute];
-                }
-            }
-
-            // Assign the custom attributes requested to be collected.
-            $.each($(settings.attributes), function (i, attribute) {
-                data[attribute] = $this.attr(attribute);
-            });
-
-            // Send the analytics.
-            $.ajax({
-                type: "POST",
-                url: settings.url,
-                contentType: "application/x-www-form-urlencoded",
-                data: data
-            })
-            .always(function () {
-                if (settings.captureOnce) {
-                    $this.addClass("analytics-captured");
+                // We prevent the default action to allow the background call to succeed.
+                var preventedHref = null;
+                if ($this.attr("href")) {
+                    e.preventDefault();
+                    preventedHref = $this.attr("href");
                 }
 
-                if (preventedHref) {
-                    window.location = preventedHref;
+                // Initialize the data to be collected.
+                var data = {};
+
+                // Attach the object identifier.
+                if (settings.id) {
+                    data[settings.id] = tree;
                 }
-            });
+                else {
+                    data["id"] = tree;
+                }
+
+                // Attach the client identifier if found.
+                if (settings.client) {
+                    data["client"] = settings.client
+                }
+
+                // Assign any "data-analytics-" attributes.
+                var dataAttributes = $this.data();
+                for (var attribute in dataAttributes) {
+                    if (attribute.startsWith("analytics")) {
+                        var cleanName = attribute.replace(/analytics/g, '').toLowerCase();
+                        data[cleanName] = dataAttributes[attribute];
+                    }
+                }
+
+                // Assign the custom attributes requested to be collected.
+                $.each($(settings.attributes), function (i, attribute) {
+                    data[attribute] = $this.attr(attribute);
+                });
+
+                // Send the analytics.
+                $.ajax({
+                    type: "POST",
+                    url: settings.url,
+                    contentType: "application/x-www-form-urlencoded",
+                    data: data
+                })
+                .always(function () {
+                    if (settings.captureOnce) {
+                        $this.addClass("analytics-captured");
+                    }
+
+                    if (preventedHref) {
+                        window.location = preventedHref;
+                    }
+                });
+            }
         }
     };
 
