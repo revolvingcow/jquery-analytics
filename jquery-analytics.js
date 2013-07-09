@@ -49,6 +49,23 @@ String.prototype.endsWith = function (search) {
         url: null
     };
 
+    // Determines if there is an exclusion in the path.
+    // @param {Object} element
+    // @return {Boolean} a value indicating whether the object is excluded
+    function isExcluded(element) {
+        var excluded = $(element).is(settings.exclude);
+        var parent = $(element).parent();
+        
+        if (parent && parent.prop("tagName") !== undefined) {
+            excluded = excluded || parent.is(settings.excluded);
+            if (!excluded) {
+                excluded = excluded || isExcluded(parent);
+            }
+        }
+
+        return excluded;
+    };
+
     // Walk the tree of a given node.
     // @param {Object} element
     // @return {Array} path
@@ -58,25 +75,18 @@ String.prototype.endsWith = function (search) {
         
         if (tagName != undefined) {
             var parent = $(element).parent();
-            if (parent != undefined) {
+            if (parent && parent.prop("tagName") !=== undefined) {
                 $.each(walkTree($(element).parent()), function (i, node) {
-                    if ($(node).is(settings.exclude)) {
-                        tree = null;
-                    }
-                    else if (tree !== null) {
-                        tree.push(node);
-                    }
+                    tree.push(node);
                 });
             }
             
-            if (tree !== null) {
-                if (tagName == "HTML" || tagName == "BODY") {
-                    tree.push(tagName);
-                }
-                else {
-                    var tagId = $(element).analyticsUniqueId().attr("id");
-                    tree.push(tagName + '[id="' + tagId + '"]');
-                }
+            if (tagName == "HTML" || tagName == "BODY") {
+                tree.push(tagName);
+            }
+            else {
+                var tagId = $(element).analyticsUniqueId().attr("id");
+                tree.push(tagName + '[id="' + tagId + '"]');
             }
         }
         
@@ -96,12 +106,12 @@ String.prototype.endsWith = function (search) {
         // Locally scope this variable.
         $this = $(this);
 
-        if (settings.url && !$this.is(".analytics-captured") && !$this.is(settings.exclude)) {
+        if (settings.url && !$this.is(".analytics-captured") && !isExcluded($this)) {
             // Walk the tree.
             var tree = walkTree($this);
 
             // Make sure the tree does not include an excluded section.
-            if (tree !== null && tree.length > 0) {
+            if (tree && tree.length > 0) {
                 // Join all the nodes of the tree.
                 tree = tree.join(' ');
 
@@ -191,7 +201,7 @@ String.prototype.endsWith = function (search) {
         var selector = settings.assignTo.join(",");
 
         return this.each(function () {
-            // Itereate through all elements given on initiation.
+            // Iterate through all elements given on initiation.
             $(this).find(selector).andSelf().filter(selector)
             .each(function () {
                 identifyPath($(this));
