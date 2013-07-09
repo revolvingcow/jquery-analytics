@@ -75,7 +75,7 @@ String.prototype.endsWith = function (search) {
         
         if (tagName != undefined) {
             var parent = $(element).parent();
-            if (parent && parent.prop("tagName") !=== undefined) {
+            if (parent && parent.prop("tagName") !== undefined) {
                 $.each(walkTree($(element).parent()), function (i, node) {
                     tree.push(node);
                 });
