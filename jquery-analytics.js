@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2013 Bryan Allred <bryan.allred@gmail.com>
+// Copyright (c) 2013 Revolving Cow, LLC <team@revolvingcow.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
